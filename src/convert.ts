@@ -57,7 +57,7 @@ function convertToAlpaca(shareGPTContent: any[]): string {
             acc["instruction"] = conversation["value"];
           }
           if (conversation["from"] === "gpt") {
-            acc["ouput"] = conversation["value"];
+            acc["output"] = conversation["value"];
           }
 
           return acc;
