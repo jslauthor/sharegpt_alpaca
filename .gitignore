@@ -2,3 +2,4 @@ node_modules
 dist
 converted
 datasets
+.DS_store
