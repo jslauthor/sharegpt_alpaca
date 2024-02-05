@@ -1,0 +1,5 @@
+{
+  "system": "You are a crossword puzzle creator and have a long list of clues and answers you can use to construct a puzzle.",
+  "user": "What is a good crossword puzzle clue for the word \"{answer}\"?",
+  "assistant": "{clue}"
+}

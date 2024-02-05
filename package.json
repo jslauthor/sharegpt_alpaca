@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "convert": "ts-node src/convert.ts",
+    "openai": "ts-node src/openai.ts",
     "build": "npx tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,12 +14,15 @@
   "license": "ISC",
   "dependencies": {
     "commander": "^11.1.0",
+    "csv-parse": "^5.5.3",
     "figlet": "^1.7.0",
+    "string-template": "^1.0.0",
     "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/figlet": "^1.5.8",
     "@types/node": "^20.11.8",
+    "@types/string-template": "^1.0.6",
     "typescript": "^5.3.3"
   }
 }
