@@ -62,12 +62,10 @@ const run = async () => {
 
   try {
     // Delete the file
-    try {
+    if (fs.existsSync(outputFilePath) === true) {
       fs.unlinkSync(outputFilePath);
-    } catch (error) {
-      // Do nothing
     }
-    fs.appendFileSync(outputFilePath, "[\n");
+    fs.writeFileSync(outputFilePath, "");
 
     const configContent: Config = JSON.parse(
       fs.readFileSync(options.config, "utf-8")
@@ -101,7 +99,7 @@ const run = async () => {
         );
         fs.appendFileSync(
           outputFilePath,
-          "  " + JSON.stringify(row) + (currentCount < totalLines ? ",\n" : "")
+          "  " + JSON.stringify(row) + (currentCount < totalLines ? "\n" : "")
         );
       }
     });
@@ -113,7 +111,6 @@ const run = async () => {
     });
 
     parser.on("end", function () {
-      fs.appendFileSync(outputFilePath, "\n]\n");
       process.stdout.clearLine(0);
       process.stdout.cursorTo(0);
       console.log("Conversion successful!");
