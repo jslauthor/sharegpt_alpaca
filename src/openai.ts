@@ -13,6 +13,8 @@ commander
   .version("1.0.0")
   .description("CSV to OpenAI Conversation Format Converter")
   .option("-t, type <csv>", "Type to convert", "csv")
+  .option("-ms, --max-sequence-length <size>", "Max size of the each record", "-1")
+  .option("-mr, --max-records <size>", "Max number of records", "-1")
   .option("-i, --input <file>", "Input CSV file")
   .option("-o, --output <file>", "OpenAI Conversation JSON", "output.json")
   .option(
@@ -51,7 +53,11 @@ function countFileLines(filePath: string): Promise<number> {
 const run = async () => {
   const inputFilePath = options.input;
   const outputFilePath = options.output;
-  let totalLines = await countFileLines(inputFilePath);
+  const maxRecords = parseInt(options.maxRecords);
+  const maxSequenceSize = parseInt(options.maxSequenceLength);
+
+  let skipped = 0;
+  let totalLines = Math.min(await countFileLines(inputFilePath), maxRecords);
   let currentCount = 0;
 
   type Config = {
@@ -80,6 +86,10 @@ const run = async () => {
     parser.on("readable", function () {
       let record;
       while ((record = parser.read()) !== null) {
+        if (currentCount >= maxRecords) {
+          continue;
+        }
+
         const row = {
           messages: [
             { role: "system", content: format(configContent.system, record) },
@@ -90,6 +100,12 @@ const run = async () => {
             },
           ],
         };
+
+        if (JSON.stringify(row).length > maxSequenceSize) {
+          skipped++;
+          continue;
+        }
+
         process.stdout.clearLine(0);
         process.stdout.cursorTo(0);
         process.stdout.write(
@@ -99,7 +115,7 @@ const run = async () => {
         );
         fs.appendFileSync(
           outputFilePath,
-          "  " + JSON.stringify(row) + (currentCount < totalLines ? "\n" : "")
+          JSON.stringify(row) + (currentCount < totalLines ? "\n" : "")
         );
       }
     });
@@ -113,7 +129,7 @@ const run = async () => {
     parser.on("end", function () {
       process.stdout.clearLine(0);
       process.stdout.cursorTo(0);
-      console.log("Conversion successful!");
+      console.log(`Processed ${currentCount} records! (skipped ${skipped})`);
       process.exit(0);
     });
   } catch (error) {
